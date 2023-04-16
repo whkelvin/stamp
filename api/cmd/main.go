@@ -33,6 +33,7 @@ func main() {
 	//	log.Fatal(err.Error())
 	//}
 	//defer conn.Close(context.Background())
+	log.Debug(config.TestEnv)
 
 	var baseUrl = "/api/v1"
 
