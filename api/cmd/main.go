@@ -2,13 +2,14 @@ package main
 
 import (
 	"context"
-
 	"github.com/jackc/pgx/v5"
 	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 	"github.com/labstack/gommon/log"
 	. "github.com/whkelvin/stamp/api/config"
 	. "github.com/whkelvin/stamp/api/features/write_post/controller"
 	. "github.com/whkelvin/stamp/features/pkg/write_post"
+	"net/http"
 )
 
 func main() {
@@ -20,6 +21,10 @@ func main() {
 	config := &Config{}
 	config.Init()
 
+	e.Use(middleware.KeyAuth(func(key string, c echo.Context) (bool, error) {
+		return key == config.ApiKey, nil
+	}))
+
 	conn, err := pgx.Connect(context.Background(), config.PostgresConnectionString)
 	if err != nil {
 		log.Fatal("Postgres Connection Failed.")
@@ -27,9 +32,17 @@ func main() {
 	}
 	defer conn.Close(context.Background())
 
+	var baseUrl = "/api/v1"
+
+	e.GET(baseUrl+"/health", healthCheck)
+
 	writePostFeature := &WritePostFeature{Database: conn}
 	var writePostController *WritePostController = &WritePostController{Handler: writePostFeature.Init()}
-	writePostController.Init("/post", e)
+	writePostController.Init(baseUrl+"/post", e)
 
-	e.Logger.Fatal(e.Start(":1323"))
+	e.Logger.Fatal(e.Start(config.Port))
+}
+
+func healthCheck(c echo.Context) error {
+	return c.String(http.StatusOK, "Service Healthy")
 }

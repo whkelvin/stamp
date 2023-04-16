@@ -8,6 +8,8 @@ import (
 
 type Config struct {
 	PostgresConnectionString string
+	ApiKey                   string
+	Port                     string
 }
 
 func (c *Config) Init() error {
@@ -20,6 +22,18 @@ func (c *Config) Init() error {
 		c.PostgresConnectionString = os.Getenv("POSTGRES_CONNECTION_STRING")
 	} else {
 		log.Fatal("Postgres Connection String is required.")
+	}
+
+	if os.Getenv("API_KEY") != "" {
+		c.ApiKey = os.Getenv("API_KEY")
+	} else {
+		log.Fatal("API key is required.")
+	}
+
+	if os.Getenv("PORT") != "" {
+		c.Port = os.Getenv("PORT")
+	} else {
+		c.Port = ":1323"
 	}
 	return nil
 }
