@@ -1,0 +1,21 @@
+version: "3.1"
+
+services:
+  db:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: #TODO PASSWORD HERE
+      POSTGRES_DB: stamp
+    ports:
+      - 5432:5432
+
+  pgadmin:
+    image: dpage/pgadmin4
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: #TODO EMAIL HERE
+      PGADMIN_DEFAULT_PASSWORD: #TODO PASSWORD HERE
+    ports:
+      - 80:80

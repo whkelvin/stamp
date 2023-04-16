@@ -1,13 +1,14 @@
 package main
 
 import (
-	//"context"
-	//"database/sql"
+	"context"
+
+	"github.com/jackc/pgx/v5"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/gommon/log"
-	//_ "github.com/mattn/go-sqlite3"
+	. "github.com/whkelvin/stamp/api/config"
 	. "github.com/whkelvin/stamp/api/features/write_post/controller"
-	. "github.com/whkelvin/stamp/features/pkg/write_post/handler"
+	. "github.com/whkelvin/stamp/features/pkg/write_post"
 )
 
 func main() {
@@ -16,19 +17,18 @@ func main() {
 	log.SetLevel(log.DEBUG)
 	log.SetHeader("${time_rfc3339} ${level}")
 
-	//db, err := sql.Open("sqlite3", "/home/whkelvin/Projects/golang/stamp/database/prisma/stamp.db")
+	config := &Config{}
+	config.Init()
 
-	//if err != nil {
-	//	log.Fatal("Opening db failed")
-	//}
+	conn, err := pgx.Connect(context.Background(), config.PostgresConnectionString)
+	if err != nil {
+		log.Fatal("Postgres Connection Failed.")
+		log.Fatal(err.Error())
+	}
+	defer conn.Close(context.Background())
 
-	//var dbService *service.DbService = &service.DbService{Ctx: context.Background(), Db: db}
-
-	//var getUserDbService *GetUserDbService = &GetUserDbService{DbService: dbService}
-	//var getUserHandler *GetUserHandler = &GetUserHandler{GetUserDbService: getUserDbService}
-	var writePostHandler *WritePostHandler = &WritePostHandler{}
-	var writePostController *WritePostController = &WritePostController{Handler: writePostHandler}
-
+	writePostFeature := &WritePostFeature{Database: conn}
+	var writePostController *WritePostController = &WritePostController{Handler: writePostFeature.Init()}
 	writePostController.Init("/post", e)
 
 	e.Logger.Fatal(e.Start(":1323"))

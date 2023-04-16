@@ -2,11 +2,12 @@ package config
 
 import (
 	"github.com/joho/godotenv"
+	"github.com/labstack/gommon/log"
 	"os"
 )
 
 type Config struct {
-	MongoDbConnectionString string
+	PostgresConnectionString string
 }
 
 func (c *Config) Init() error {
@@ -15,10 +16,10 @@ func (c *Config) Init() error {
 		return err
 	}
 
-	if os.Getenv("MONGO_DB_CONNECTION_STRING") != "" {
-		c.MongoDbConnectionString = os.Getenv("MONGO_DB_CONNECTION_STRING")
+	if os.Getenv("POSTGRES_CONNECTION_STRING") != "" {
+		c.PostgresConnectionString = os.Getenv("POSTGRES_CONNECTION_STRING")
 	} else {
-		c.MongoDbConnectionString = "mongodb://foo:bar@localhost:27017"
+		log.Fatal("Postgres Connection String is required.")
 	}
 	return nil
 }

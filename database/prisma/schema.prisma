@@ -1,0 +1,12 @@
+datasource db {
+  provider = "postgresql"
+  url = env("DATABASE_URL")
+}
+
+model post {
+  post_id Int @id @default(autoincrement())
+  link String @default("")
+  title String @default("")
+  description String @default("")
+}
+

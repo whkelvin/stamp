@@ -13,7 +13,7 @@ import (
 	. "github.com/whkelvin/stamp/api/features/write_post/models"
 
 	"github.com/whkelvin/stamp/features/pkg/write_post/handler"
-	handlerModel "github.com/whkelvin/stamp/features/pkg/write_post/models"
+	handlerModel "github.com/whkelvin/stamp/features/pkg/write_post/handler/models"
 )
 
 type WritePostController struct {
@@ -55,10 +55,10 @@ func (controller *WritePostController) WritePost(c echo.Context) error {
 		Title:       req.Title,
 		Description: req.Description,
 	}
-	res, err := controller.Handler.WritePost(handlerReq)
+	err = controller.Handler.WritePost(handlerReq)
 	if err != nil {
 		return c.String(http.StatusInternalServerError, "Something went wrong, try again later.")
 	}
 
-	return c.JSON(http.StatusOK, res)
+	return c.String(http.StatusCreated, "Post Created.")
 }

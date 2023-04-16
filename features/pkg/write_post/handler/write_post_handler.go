@@ -1,27 +1,28 @@
 package handler
 
 import (
-	. "github.com/whkelvin/stamp/features/pkg/write_post/models"
+	. "github.com/whkelvin/stamp/features/pkg/write_post/db"
+	dbModels "github.com/whkelvin/stamp/features/pkg/write_post/db/models"
+	. "github.com/whkelvin/stamp/features/pkg/write_post/handler/models"
 )
 
 type IWritePostHandler interface {
-	WritePost(req Request) (string, error)
+	WritePost(req Request) error
 }
 
 type WritePostHandler struct {
-	//GetUserDbService db.IGetUserDbService
+	DbService IWritePostDbService
 }
 
-func (handler *WritePostHandler) WritePost(req Request) (string, error) {
-	//user, err := handler.GetUserDbService.GetUser(req.Id)
+func (handler *WritePostHandler) WritePost(req Request) error {
 
-	//if err != nil {
-	//	return models.GetUserResponse{}, err
-	//}
+	newPost := dbModels.NewPost{
+		Link:        req.Link,
+		Title:       req.Title,
+		Description: req.Description,
+	}
 
-	//return models.GetUserResponse{
-	//	Id:   int(user.UserId),
-	//	Name: user.Username,
-	//}, nil
-	return "ok", nil
+	handler.DbService.CreatePost(newPost)
+
+	return nil
 }
