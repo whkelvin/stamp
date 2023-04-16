@@ -13,14 +13,16 @@ import (
 )
 
 func main() {
+	config := &Config{}
+	err := config.Init()
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+
 	var e *echo.Echo = echo.New()
 
-	log.SetLevel(log.DEBUG)
+	log.SetLevel(log.WARN)
 	log.SetHeader("${time_rfc3339} ${level}")
-
-	config := &Config{}
-	config.Init()
-
 	e.Use(middleware.KeyAuth(func(key string, c echo.Context) (bool, error) {
 		return key == config.ApiKey, nil
 	}))
