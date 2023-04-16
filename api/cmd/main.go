@@ -42,7 +42,7 @@ func main() {
 	//var writePostController *WritePostController = &WritePostController{Handler: writePostFeature.Init()}
 	//writePostController.Init(baseUrl+"/post", e)
 
-	e.Logger.Fatal(e.Start(config.Port))
+	e.Logger.Fatal(e.Start(":" + config.Port))
 }
 
 func healthCheck(c echo.Context) error {
