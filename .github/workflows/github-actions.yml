@@ -14,9 +14,8 @@ jobs:
         DATABASE_URL: ${{ secrets.DATABASE_URL }}
     steps:
       - run: npm install -g prisma
-      - run: ls
-      - run: cd ../database/prisma
       - run: prisma migrate deploy
+        working-directory: ${PWD}/database/prisma
 
   PrismaDatabaseMigrationProd:
     needs: PrismaDatabaseMigrationDev
