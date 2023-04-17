@@ -8,16 +8,14 @@ jobs:
   PrismaDatabaseMigrationDev:
     environment: development
     runs-on: ubuntu-latest
-    container:
-      image: node:18
-      env:
-        DATABASE_URL: ${{ secrets.DATABASE_URL }}
+    env:
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
     steps:
-      #- run: npm install -g prisma
-      - run:
-          ls ./
-          #- run: prisma migrate deploy
-          #working-directory: ./database/prisma/
+      - run: ls -la
+      - run: apt update && apt install npm
+      - run: npm install -g prisma
+      - run: prisma migrate deploy
+        working-directory: database/prisma
 
   PrismaDatabaseMigrationProd:
     needs: PrismaDatabaseMigrationDev
