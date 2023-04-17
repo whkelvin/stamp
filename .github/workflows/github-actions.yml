@@ -15,7 +15,7 @@ jobs:
     steps:
       - run: npm install -g prisma
       - run: prisma migrate deploy
-        working-directory: ${PWD}/database/prisma
+        working-directory: ./database/prisma/
 
   PrismaDatabaseMigrationProd:
     needs: PrismaDatabaseMigrationDev
