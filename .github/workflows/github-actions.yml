@@ -9,13 +9,13 @@ jobs:
     environment: development
     runs-on: ubuntu-latest
     container:
-      image: node:18-alpine
+      image: node:18
       env:
         DATABASE_URL: ${{ secrets.DATABASE_URL }}
     steps:
       #- run: npm install -g prisma
       - run:
-          -c ls
+          ls -la
           #- run: prisma migrate deploy
           #working-directory: ./database/prisma/
 
