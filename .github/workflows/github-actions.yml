@@ -1,0 +1,28 @@
+name: DB Migration Dev
+run-name: ${{ github.actor }} is running migration...
+on:
+  push:
+    branches:
+      - master
+jobs:
+  Prisma Database Migration Dev:
+    environment: development
+    runs-on: ubuntu-latest
+    container:
+      image: node:18-alpine
+    env:
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+    steps:
+      - npm install -g prisma
+      - cd database/prisma
+      - prisma migrate deploy
+
+  Prisma Database Migration Prod:
+    environment: production
+    runs-on: ubuntu-latest
+    container:
+      image: node:18-alpine
+    env:
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+    steps:
+      - echo 'hello world'
