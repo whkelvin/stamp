@@ -2,8 +2,10 @@ package configs
 
 import (
 	"errors"
-	"github.com/joho/godotenv"
 	"os"
+
+	"github.com/joho/godotenv"
+	"github.com/labstack/gommon/log"
 )
 
 type Configs struct {
@@ -16,7 +18,7 @@ type Configs struct {
 func (c *Configs) Init() error {
 	err := godotenv.Load()
 	if err != nil {
-		return err
+		log.Info(".env file not found, getting configs from env variables directly.")
 	}
 
 	if os.Getenv("TEST_ENV") != "" {

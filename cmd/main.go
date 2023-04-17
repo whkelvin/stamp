@@ -21,7 +21,7 @@ func main() {
 
 	var e *echo.Echo = echo.New()
 
-	log.SetLevel(log.WARN)
+	log.SetLevel(log.INFO)
 	log.SetHeader("${time_rfc3339} ${level}")
 	e.Use(middleware.KeyAuth(func(key string, c echo.Context) (bool, error) {
 		return key == configs.ApiKey, nil
