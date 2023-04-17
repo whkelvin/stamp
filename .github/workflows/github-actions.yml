@@ -8,12 +8,12 @@ jobs:
   PrismaDatabaseMigrationDev:
     environment: development
     runs-on: ubuntu-latest
-    env:
-      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+    container:
+      image: node:18-alpine
+      env:
+        DATABASE_URL: ${{ secrets.DATABASE_URL }}
     steps:
-      - run: ls -la
-        shell: bash
-      - run: apt update && apt install npm
+      - uses: actions/checkout@v2
       - run: npm install -g prisma
       - run: prisma migrate deploy
         working-directory: database/prisma
@@ -27,4 +27,5 @@ jobs:
       env:
         DATABASE_URL: ${{ secrets.DATABASE_URL }}
     steps:
+      - uses: actions/checkout@v2
       - run: echo 'hello world'
