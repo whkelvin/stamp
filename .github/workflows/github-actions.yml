@@ -12,6 +12,7 @@ jobs:
       DATABASE_URL: ${{ secrets.DATABASE_URL }}
     steps:
       - run: ls -la
+        shell: bash
       - run: apt update && apt install npm
       - run: npm install -g prisma
       - run: prisma migrate deploy
