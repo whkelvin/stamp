@@ -2,8 +2,8 @@ package write_post
 
 import (
 	"github.com/jackc/pgx/v5"
-	. "github.com/whkelvin/stamp/features/pkg/write_post/db"
-	. "github.com/whkelvin/stamp/features/pkg/write_post/handler"
+	. "github.com/whkelvin/stamp/pkg/features/write_post/db"
+	. "github.com/whkelvin/stamp/pkg/features/write_post/handler"
 )
 
 type WritePostFeature struct {

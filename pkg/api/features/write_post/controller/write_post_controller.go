@@ -1,19 +1,12 @@
 package controller
 
 import (
-	//"fmt"
 	"errors"
-	"net/http"
-	//"stamp/features/pkg/get_user/handler"
-	//"stamp/features/pkg/get_user/models"
-	//"strconv"
-
 	"github.com/labstack/echo/v4"
-	//"github.com/labstack/gommon/log"
-	. "github.com/whkelvin/stamp/api/features/write_post/models"
-
-	"github.com/whkelvin/stamp/features/pkg/write_post/handler"
-	handlerModel "github.com/whkelvin/stamp/features/pkg/write_post/handler/models"
+	. "github.com/whkelvin/stamp/pkg/api/features/write_post/models"
+	"github.com/whkelvin/stamp/pkg/features/write_post/handler"
+	handlerModel "github.com/whkelvin/stamp/pkg/features/write_post/handler/models"
+	"net/http"
 )
 
 type WritePostController struct {

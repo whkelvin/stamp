@@ -1,4 +1,4 @@
-package config
+package configs
 
 import (
 	"errors"
@@ -6,14 +6,14 @@ import (
 	"os"
 )
 
-type Config struct {
+type Configs struct {
 	TestEnv                  string
 	PostgresConnectionString string
 	ApiKey                   string
 	Port                     string
 }
 
-func (c *Config) Init() error {
+func (c *Configs) Init() error {
 	err := godotenv.Load()
 	if err != nil {
 		return err

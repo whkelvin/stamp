@@ -1,9 +1,9 @@
 package handler
 
 import (
-	. "github.com/whkelvin/stamp/features/pkg/write_post/db"
-	dbModels "github.com/whkelvin/stamp/features/pkg/write_post/db/models"
-	. "github.com/whkelvin/stamp/features/pkg/write_post/handler/models"
+	. "github.com/whkelvin/stamp/pkg/features/write_post/db"
+	dbModels "github.com/whkelvin/stamp/pkg/features/write_post/db/models"
+	. "github.com/whkelvin/stamp/pkg/features/write_post/handler/models"
 )
 
 type IWritePostHandler interface {

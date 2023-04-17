@@ -7,7 +7,7 @@ import (
 	//. "github.com/whkelvin/stamp/features/pkg/write_post/db"
 	"context"
 	"github.com/jackc/pgx/v5"
-	"github.com/whkelvin/stamp/features/pkg/write_post/db/models"
+	"github.com/whkelvin/stamp/pkg/features/write_post/db/models"
 )
 
 type IWritePostDbService interface {
