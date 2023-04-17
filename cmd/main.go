@@ -1,14 +1,14 @@
 package main
 
 import (
-	"context"
-	"github.com/jackc/pgx/v5"
+	//"context"
+	//"github.com/jackc/pgx/v5"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/labstack/gommon/log"
 	. "github.com/whkelvin/stamp/configs"
-	. "github.com/whkelvin/stamp/pkg/api/features/write_post/controller"
-	. "github.com/whkelvin/stamp/pkg/features/write_post"
+	//. "github.com/whkelvin/stamp/pkg/api/features/write_post/controller"
+	//. "github.com/whkelvin/stamp/pkg/features/write_post"
 	"net/http"
 )
 
@@ -27,21 +27,21 @@ func main() {
 		return key == configs.ApiKey, nil
 	}))
 
-	conn, err := pgx.Connect(context.Background(), configs.PostgresConnectionString)
-	if err != nil {
-		log.Fatal("Postgres Connection Failed.")
-		log.Fatal(err.Error())
-	}
-	defer conn.Close(context.Background())
+	//conn, err := pgx.Connect(context.Background(), configs.PostgresConnectionString)
+	//if err != nil {
+	//	log.Fatal("Postgres Connection Failed.")
+	//	log.Fatal(err.Error())
+	//}
+	//defer conn.Close(context.Background())
 	log.Debug(configs.TestEnv)
 
 	var baseUrl = "/api/v1"
 
 	e.GET(baseUrl+"/health", healthCheck)
 
-	writePostFeature := &WritePostFeature{Database: conn}
-	var writePostController *WritePostController = &WritePostController{Handler: writePostFeature.Init()}
-	writePostController.Init(baseUrl+"/post", e)
+	//writePostFeature := &WritePostFeature{Database: conn}
+	//var writePostController *WritePostController = &WritePostController{Handler: writePostFeature.Init()}
+	//writePostController.Init(baseUrl+"/post", e)
 
 	e.Logger.Fatal(e.Start(":" + configs.Port))
 }
