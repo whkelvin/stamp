@@ -15,7 +15,7 @@ jobs:
     steps:
       #- run: npm install -g prisma
       - run:
-          ls /
+          ls ./
           #- run: prisma migrate deploy
           #working-directory: ./database/prisma/
 
