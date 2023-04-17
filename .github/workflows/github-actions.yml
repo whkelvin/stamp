@@ -5,24 +5,25 @@ on:
     branches:
       - master
 jobs:
-  Prisma Database Migration Dev:
+  PrismaDatabaseMigrationDev:
     environment: development
     runs-on: ubuntu-latest
     container:
       image: node:18-alpine
-    env:
-      DATABASE_URL: ${{ secrets.DATABASE_URL }}
     steps:
-      - npm install -g prisma
-      - cd database/prisma
-      - prisma migrate deploy
+      - env:
+        DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      - run: npm install -g prisma
+      - run: cd database/prisma
+      - run: prisma migrate deploy
 
-  Prisma Database Migration Prod:
+  PrismaDatabaseMigrationProd:
+    needs: PrismaDatabaseMigrationDev
     environment: production
     runs-on: ubuntu-latest
     container:
       image: node:18-alpine
-    env:
-      DATABASE_URL: ${{ secrets.DATABASE_URL }}
     steps:
-      - echo 'hello world'
+      - env:
+        DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      - run: echo 'hello world'
