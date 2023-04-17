@@ -10,12 +10,12 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: node:18-alpine
+      env:
+        DATABASE_URL: ${{ secrets.DATABASE_URL }}
     steps:
-      - env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
-        run: npm install -g prisma
-        run: cd database/prisma
-        run: prisma migrate deploy
+      - run: npm install -g prisma
+      - run: prisma migrate deploy
+        working-directory: database/prisma
 
   PrismaDatabaseMigrationProd:
     needs: PrismaDatabaseMigrationDev
@@ -23,7 +23,7 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: node:18-alpine
+      env:
+        DATABASE_URL: ${{ secrets.DATABASE_URL }}
     steps:
-      - env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
-        run: echo 'hello world'
+      - run: echo 'hello world'
