@@ -12,10 +12,10 @@ jobs:
       image: node:18-alpine
     steps:
       - env:
-        DATABASE_URL: ${{ secrets.DATABASE_URL }}
-      - run: npm install -g prisma
-      - run: cd database/prisma
-      - run: prisma migrate deploy
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: npm install -g prisma
+        run: cd database/prisma
+        run: prisma migrate deploy
 
   PrismaDatabaseMigrationProd:
     needs: PrismaDatabaseMigrationDev
@@ -25,5 +25,5 @@ jobs:
       image: node:18-alpine
     steps:
       - env:
-        DATABASE_URL: ${{ secrets.DATABASE_URL }}
-      - run: echo 'hello world'
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: echo 'hello world'
