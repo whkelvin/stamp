@@ -15,6 +15,7 @@ type WritePostController struct {
 
 func (c *WritePostController) Init(route string, e *echo.Echo) {
 	e.POST(route, c.WritePost)
+	e.POST("/api/v1/testpost", c.TestPost)
 }
 
 func parseWritePostRequest(c echo.Context) (*Request, error) {
@@ -54,4 +55,19 @@ func (controller *WritePostController) WritePost(c echo.Context) error {
 	}
 
 	return c.String(http.StatusCreated, "Post Created.")
+}
+
+func (controller *WritePostController) TestPost(c echo.Context) error {
+	req, err := parseWritePostRequest(c)
+	if err != nil {
+		return c.String(http.StatusBadRequest, err.Error())
+	}
+
+	handlerReq := handlerModel.Request{
+		Link:        req.Link,
+		Title:       req.Title,
+		Description: req.Description,
+	}
+
+	return c.JSON(http.StatusCreated, handlerReq)
 }
