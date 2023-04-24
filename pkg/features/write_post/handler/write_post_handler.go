@@ -6,7 +6,7 @@ import (
 	. "github.com/whkelvin/stamp/pkg/features/write_post/db"
 	dbModels "github.com/whkelvin/stamp/pkg/features/write_post/db/models"
 	. "github.com/whkelvin/stamp/pkg/features/write_post/handler/models"
-	"regexp"
+	"github.com/whkelvin/stamp/pkg/helpers"
 	"time"
 )
 
@@ -28,16 +28,11 @@ func (handler *WritePostHandler) WritePost(ctx context.Context, req Request) (*R
 	}
 
 	if newPost.RootDomain == "youtube.com" {
-		regExp := `/^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/`
-		exp := regexp.MustCompile(regExp)
-		submatches := exp.FindStringSubmatch(newPost.Link)
-
-		if len(submatches) >= 2 && len(submatches[2]) == 11 {
-			id := submatches[2]
-			newPost.Link = "https://www.youtube.com/embed/" + id
-		} else {
+		result, err := helpers.GetYoutubeEmbedLink(newPost.Link)
+		if err != nil {
 			return nil, errors.New("Invalid youtube link")
 		}
+		newPost.Link = result
 	}
 
 	dto, err := handler.DbService.CreatePost(ctx, newPost)
