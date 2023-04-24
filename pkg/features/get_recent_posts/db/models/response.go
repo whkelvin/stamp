@@ -1,8 +1,16 @@
 package models
 
-import "time"
+import (
+	"time"
+)
 
-type PostDto struct {
+type Response struct {
+	Count      int
+	Posts      []Post
+	TotalCount int
+}
+
+type Post struct {
 	PostId      string    `db:"post_id"`
 	Link        string    `db:"link"`
 	Title       string    `db:"title"`

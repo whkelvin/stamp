@@ -3,10 +3,12 @@ datasource db {
   url = env("DATABASE_URL")
 }
 
-model post {
-  post_id Int @id @default(autoincrement())
+model posts {
+  post_id String @id @default("")
   link String @default("")
   title String @default("")
   description String @default("")
+  created_date DateTime @default(now())
+  root_domain String @default("")
 }
 

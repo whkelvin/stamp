@@ -27,11 +27,15 @@ func parseWritePostRequest(c echo.Context) (*Request, error) {
 	}
 
 	if req.Link == "" {
-		return nil, errors.New("field 'link' is required")
+		return nil, errors.New("field 'link' is required.")
 	}
 
 	if req.Title == "" {
-		return nil, errors.New("field 'title' is required ")
+		return nil, errors.New("field 'title' is required.")
+	}
+
+	if req.RootDomain == "" {
+		return nil, errors.New("field 'rootDomain' is required.")
 	}
 
 	return &req, nil
@@ -48,13 +52,23 @@ func (controller *WritePostController) WritePost(c echo.Context) error {
 		Link:        req.Link,
 		Title:       req.Title,
 		Description: req.Description,
+		RootDomain:  req.RootDomain,
 	}
-	err = controller.Handler.WritePost(handlerReq)
+	dto, err := controller.Handler.WritePost(c.Request().Context(), handlerReq)
 	if err != nil {
 		return c.String(http.StatusInternalServerError, "Something went wrong, try again later.")
 	}
 
-	return c.String(http.StatusCreated, "Post Created.")
+	res := Response{
+		PostId:      dto.PostId,
+		Title:       dto.Title,
+		Description: dto.Description,
+		CreatedDate: dto.CreatedDate,
+		Link:        dto.Link,
+		RootDomain:  dto.RootDomain,
+	}
+
+	return c.JSON(http.StatusCreated, res)
 }
 
 func (controller *WritePostController) TestPost(c echo.Context) error {
