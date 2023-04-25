@@ -1,6 +1,6 @@
 package models
 
-type NewPost struct {
+type Request struct {
 	Link        string
 	Title       string
 	Description string

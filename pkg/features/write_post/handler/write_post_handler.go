@@ -20,7 +20,7 @@ type WritePostHandler struct {
 
 func (handler *WritePostHandler) WritePost(ctx context.Context, req Request) (*Response, error) {
 
-	newPost := dbModels.NewPost{
+	newPost := dbModels.Request{
 		Link:        req.Link,
 		Title:       req.Title,
 		Description: req.Description,

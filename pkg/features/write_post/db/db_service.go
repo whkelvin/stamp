@@ -11,14 +11,14 @@ import (
 )
 
 type IWritePostDbService interface {
-	CreatePost(ctx context.Context, newPost models.NewPost) (*models.PostDto, error)
+	CreatePost(ctx context.Context, newPost models.Request) (*models.Response, error)
 }
 
 type WritePostDbService struct {
 	ConnPool *pgxpool.Pool
 }
 
-func (db *WritePostDbService) CreatePost(ctx context.Context, newPost models.NewPost) (*models.PostDto, error) {
+func (db *WritePostDbService) CreatePost(ctx context.Context, newPost models.Request) (*models.Response, error) {
 	uuid := uuid.New()
 
 	_, err := db.ConnPool.Exec(ctx, "insert into posts (post_id, link, title, description, created_date, root_domain) VALUES ($1, $2, $3, $4, now() at time zone('utc'), $5);", uuid, newPost.Link, newPost.Title, newPost.Description, newPost.RootDomain)
@@ -27,7 +27,7 @@ func (db *WritePostDbService) CreatePost(ctx context.Context, newPost models.New
 		return nil, err
 	}
 
-	var postDto models.PostDto
+	var postDto models.Response
 	rows, err := db.ConnPool.Query(ctx, "select post_id, link, title, description, created_date, root_domain from posts where post_id=$1", uuid)
 	if err != nil {
 		log.Error(err)

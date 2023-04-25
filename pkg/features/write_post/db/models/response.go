@@ -2,7 +2,7 @@ package models
 
 import "time"
 
-type PostDto struct {
+type Response struct {
 	PostId      string    `db:"post_id"`
 	Link        string    `db:"link"`
 	Title       string    `db:"title"`
