@@ -8,7 +8,6 @@ import (
 )
 
 type Configs struct {
-	TestEnv                    string
 	MongoDbConnectionString    string
 	MongoDbDatabaseName        string
 	MongoDbPostsCollectionName string
@@ -20,12 +19,6 @@ func (c *Configs) Init() error {
 	err := godotenv.Load()
 	if err != nil {
 		log.Info(".env file not found, getting configs from env variables directly.")
-	}
-
-	if os.Getenv("TEST_ENV") != "" {
-		c.TestEnv = os.Getenv("TEST_ENV")
-	} else {
-		return errors.New("Test Env String is required.")
 	}
 
 	if os.Getenv("MONGO_DB_CONNECTION_STRING") != "" {
