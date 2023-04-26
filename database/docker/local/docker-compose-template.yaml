@@ -1,21 +1,21 @@
 version: "3.1"
 
 services:
-  db:
-    image: postgres
+  mongo:
+    image: mongo
     restart: always
     environment:
-      POSTGRES_USER: admin
-      POSTGRES_PASSWORD: #TODO PASSWORD HERE
-      POSTGRES_DB: stamp
+      MONGO_INITDB_ROOT_USERNAME: { username here }
+      MONGO_INITDB_ROOT_PASSWORD: { pw here }
     ports:
-      - 5432:5432
+      - 27017:27017
 
-  pgadmin:
-    image: dpage/pgadmin4
+  mongo-express:
+    image: mongo-express
     restart: always
-    environment:
-      PGADMIN_DEFAULT_EMAIL: #TODO EMAIL HERE
-      PGADMIN_DEFAULT_PASSWORD: #TODO PASSWORD HERE
     ports:
-      - 80:80
+      - 8081:8081
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: { username }
+      ME_CONFIG_MONGODB_ADMINPASSWORD: { pw }
+      ME_CONFIG_MONGODB_URL: mongodb://{username}:{pw}@mongo:27017/

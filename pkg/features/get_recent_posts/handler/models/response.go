@@ -5,9 +5,8 @@ import (
 )
 
 type Response struct {
-	Count      int
-	Posts      []Post
-	TotalCount int
+	Count int
+	Posts []Post
 }
 
 type Post struct {

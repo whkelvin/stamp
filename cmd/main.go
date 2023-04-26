@@ -2,17 +2,16 @@ package main
 
 import (
 	"context"
-	"github.com/jackc/pgx/v5"
-	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/labstack/gommon/log"
-	pgxUUID "github.com/vgarvardt/pgx-google-uuid/v5"
 	. "github.com/whkelvin/stamp/configs"
 	. "github.com/whkelvin/stamp/pkg/api/features/get_recent_posts/controller"
 	. "github.com/whkelvin/stamp/pkg/api/features/write_post/controller"
 	. "github.com/whkelvin/stamp/pkg/features/get_recent_posts"
 	. "github.com/whkelvin/stamp/pkg/features/write_post"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 	"net/http"
 )
 
@@ -43,31 +42,24 @@ func main() {
 		},
 	}))
 
-	pgxConfig, err := pgxpool.ParseConfig(configs.PostgresConnectionString)
+	ctx := context.Background()
+	mongoClient, err := mongo.Connect(ctx, options.Client().ApplyURI(configs.MongoDbConnectionString))
 	if err != nil {
 		panic(err)
 	}
-
-	pgxConfig.AfterConnect = func(ctx context.Context, conn *pgx.Conn) error {
-		pgxUUID.Register(conn.TypeMap())
-		return nil
-	}
-
-	pgxConnPool, err := pgxpool.NewWithConfig(context.Background(), pgxConfig)
-	if err != nil {
-		log.Error("Postgres Connection Failed.")
-		log.Error(err.Error())
-		panic(err)
-	}
-	defer pgxConnPool.Close()
+	defer func() {
+		if err := mongoClient.Disconnect(ctx); err != nil {
+			panic(err)
+		}
+	}()
 
 	e.GET(BASE_URL+"/health", healthCheck)
 
-	writePostFeature := &WritePostFeature{ConnPool: pgxConnPool}
+	writePostFeature := &WritePostFeature{MongoDbClient: mongoClient, MongoDbDatabaseName: configs.MongoDbDatabaseName, MongoDbCollectionName: configs.MongoDbPostsCollectionName}
 	var writePostController *WritePostController = &WritePostController{Handler: writePostFeature.Init()}
 	writePostController.Init(BASE_URL+"/post", e)
 
-	getRecentPostsFeature := &GetRecentPostsFeature{ConnPool: pgxConnPool}
+	getRecentPostsFeature := &GetRecentPostsFeature{MongoDbClient: mongoClient, MongoDbDatabaseName: configs.MongoDbDatabaseName, MongoDbCollectionName: configs.MongoDbPostsCollectionName}
 	var getRecentPostsController *GetRecentPostsController = &GetRecentPostsController{Handler: getRecentPostsFeature.Init()}
 	getRecentPostsController.Init(BASE_URL+"/posts", e)
 

@@ -2,12 +2,11 @@ package db
 
 import (
 	"context"
-	"github.com/labstack/gommon/log"
-
-	"github.com/georgysavva/scany/v2/pgxscan"
-	"github.com/google/uuid"
-	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/whkelvin/stamp/pkg/features/write_post/db/models"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
+	"time"
 )
 
 type IWritePostDbService interface {
@@ -15,31 +14,32 @@ type IWritePostDbService interface {
 }
 
 type WritePostDbService struct {
-	ConnPool *pgxpool.Pool
+	MongoDbClient         *mongo.Client
+	MongoDbDatabaseName   string
+	MongoDbCollectionName string
 }
 
-func (db *WritePostDbService) CreatePost(ctx context.Context, newPost models.Request) (*models.Response, error) {
-	uuid := uuid.New()
+func (db *WritePostDbService) CreatePost(ctx context.Context, request models.Request) (*models.Response, error) {
+	coll := db.MongoDbClient.Database(db.MongoDbDatabaseName).Collection(db.MongoDbCollectionName)
+	request.CreatedDate = time.Now().UTC().Format(time.RFC3339)
 
-	_, err := db.ConnPool.Exec(ctx, "insert into posts (post_id, link, title, description, created_date, root_domain) VALUES ($1, $2, $3, $4, now() at time zone('utc'), $5);", uuid, newPost.Link, newPost.Title, newPost.Description, newPost.RootDomain)
+	opts := options.InsertOne().SetBypassDocumentValidation(true)
+
+	result, err := coll.InsertOne(ctx, request, opts)
 	if err != nil {
-		log.Error(err)
 		return nil, err
 	}
 
-	var postDto models.Response
-	rows, err := db.ConnPool.Query(ctx, "select post_id, link, title, description, created_date, root_domain from posts where post_id=$1", uuid)
-	if err != nil {
-		log.Error(err)
-		return nil, err
+	id := result.InsertedID.(primitive.ObjectID).Hex()
 
+	var response models.Response = models.Response{
+		PostId:      id,
+		CreatedDate: request.CreatedDate,
+		Link:        request.Link,
+		Description: request.Description,
+		Title:       request.Description,
+		RootDomain:  request.RootDomain,
 	}
 
-	err = pgxscan.ScanOne(&postDto, rows)
-	if err != nil {
-		log.Error(err)
-		return nil, err
-	}
-
-	return &postDto, nil
+	return &response, nil
 }

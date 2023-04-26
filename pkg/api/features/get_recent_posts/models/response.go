@@ -5,11 +5,10 @@ import (
 )
 
 type Response struct {
-	Count      int    `json:"count"`
-	Page       int    `json:"page"`
-	PageSize   int    `json:"pageSize"`
-	TotalPages int    `json:"totalPages"`
-	Posts      []Post `json:"posts"`
+	Count    int    `json:"count"`
+	Page     int    `json:"page"`
+	PageSize int    `json:"pageSize"`
+	Posts    []Post `json:"posts"`
 }
 
 type Post struct {

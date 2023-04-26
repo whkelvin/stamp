@@ -2,19 +2,20 @@ package models
 
 import (
 	"time"
+
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type Response struct {
-	Count      int
-	Posts      []Post
-	TotalCount int
+	Count int
+	Posts []Post
 }
 
 type Post struct {
-	PostId      string    `db:"post_id"`
-	Link        string    `db:"link"`
-	Title       string    `db:"title"`
-	Description string    `db:"description"`
-	CreatedDate time.Time `db:"created_date"`
-	RootDomain  string    `db:"root_domain"`
+	PostId      primitive.ObjectID `bson:"_id"`
+	Link        string             `bson:"link"`
+	Title       string             `bson:"title"`
+	Description string             `bson:"description"`
+	CreatedDate time.Time          `bson:"createdDate"`
+	RootDomain  string             `bson:"rootDomain"`
 }

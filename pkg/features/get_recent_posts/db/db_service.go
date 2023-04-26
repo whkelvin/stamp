@@ -2,11 +2,11 @@ package db
 
 import (
 	"context"
-	"github.com/georgysavva/scany/v2/pgxscan"
-	"github.com/jackc/pgx/v5"
-	"github.com/jackc/pgx/v5/pgxpool"
-	"github.com/labstack/gommon/log"
 	. "github.com/whkelvin/stamp/pkg/features/get_recent_posts/db/models"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type IGetRecentPostsDbService interface {
@@ -14,52 +14,27 @@ type IGetRecentPostsDbService interface {
 }
 
 type GetRecentPostsDbService struct {
-	ConnPool *pgxpool.Pool
+	MongoDbClient         *mongo.Client
+	MongoDbDatabaseName   string
+	MongoDbCollectionName string
 }
 
 func (db *GetRecentPostsDbService) GetRecentPosts(ctx context.Context, req Request) (*Response, error) {
+	coll := db.MongoDbClient.Database(db.MongoDbDatabaseName).Collection(db.MongoDbCollectionName)
 
-	tx, err := db.ConnPool.BeginTx(ctx, pgx.TxOptions{
-		IsoLevel:       pgx.ReadCommitted,
-		AccessMode:     pgx.ReadOnly,
-		DeferrableMode: pgx.Deferrable,
-	})
-	if err != nil {
+	filter := bson.D{}
+	opts := options.Find().SetSort(bson.D{primitive.E{Key: "created_date", Value: -1}}).SetLimit(int64(req.Take)).SetSkip(int64(req.Skip))
+
+	cursor, err := coll.Find(ctx, filter, opts)
+
+	var result []Post
+	if err = cursor.All(ctx, &result); err != nil {
 		return nil, err
-	}
-
-	defer tx.Rollback(ctx)
-
-	var posts []Post
-	rows, err := db.ConnPool.Query(ctx, "select post_id, link, title, description, created_date, root_domain from posts order by created_date desc limit $1 offset $2", req.Take, req.Skip)
-	if err != nil {
-		log.Error(err)
-		return nil, err
-	}
-
-	err = pgxscan.ScanAll(&posts, rows)
-	if err != nil {
-		log.Error(err)
-		return nil, err
-	}
-
-	var count int
-	row := db.ConnPool.QueryRow(ctx, "SELECT COUNT(*) FROM posts")
-	err = row.Scan(&count)
-	if err != nil {
-		log.Error(err)
-		return nil, err
-	}
-
-	if err = tx.Commit(ctx); err != nil {
-		panic(err)
 	}
 
 	res := &Response{
-		Posts:      posts,
-		Count:      len(posts),
-		TotalCount: count,
+		Posts: result,
+		Count: len(result),
 	}
-
 	return res, nil
 }

@@ -62,11 +62,10 @@ func (controller *GetRecentPostsController) GetRecentPosts(c echo.Context) error
 	}
 
 	res := Response{
-		Count:      result.Count,
-		PageSize:   req.Size,
-		Posts:      posts,
-		Page:       req.Page,
-		TotalPages: result.TotalCount,
+		Count:    result.Count,
+		PageSize: req.Size,
+		Posts:    posts,
+		Page:     req.Page,
 	}
 
 	return c.JSON(http.StatusCreated, res)

@@ -2,17 +2,18 @@ package configs
 
 import (
 	"errors"
-	"os"
-
 	"github.com/joho/godotenv"
 	"github.com/labstack/gommon/log"
+	"os"
 )
 
 type Configs struct {
-	TestEnv                  string
-	PostgresConnectionString string
-	ApiKey                   string
-	Port                     string
+	TestEnv                    string
+	MongoDbConnectionString    string
+	MongoDbDatabaseName        string
+	MongoDbPostsCollectionName string
+	ApiKey                     string
+	Port                       string
 }
 
 func (c *Configs) Init() error {
@@ -27,11 +28,14 @@ func (c *Configs) Init() error {
 		return errors.New("Test Env String is required.")
 	}
 
-	if os.Getenv("POSTGRES_CONNECTION_STRING") != "" {
-		c.PostgresConnectionString = os.Getenv("POSTGRES_CONNECTION_STRING")
+	if os.Getenv("MONGO_DB_CONNECTION_STRING") != "" {
+		c.MongoDbConnectionString = os.Getenv("MONGO_DB_CONNECTION_STRING")
 	} else {
-		return errors.New("Postgres Connection String is required.")
+		return errors.New("Mongo db connection String is required.")
 	}
+
+	c.MongoDbDatabaseName = "stamp"
+	c.MongoDbPostsCollectionName = "posts"
 
 	if os.Getenv("API_KEY") != "" {
 		c.ApiKey = os.Getenv("API_KEY")
@@ -42,7 +46,8 @@ func (c *Configs) Init() error {
 	if os.Getenv("PORT") != "" {
 		c.Port = os.Getenv("PORT")
 	} else {
-		c.Port = ":1323"
+		c.Port = "1323"
 	}
+
 	return nil
 }

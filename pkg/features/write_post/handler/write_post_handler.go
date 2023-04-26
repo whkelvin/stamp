@@ -3,11 +3,11 @@ package handler
 import (
 	"context"
 	"errors"
+
 	. "github.com/whkelvin/stamp/pkg/features/write_post/db"
 	dbModels "github.com/whkelvin/stamp/pkg/features/write_post/db/models"
 	. "github.com/whkelvin/stamp/pkg/features/write_post/handler/models"
 	"github.com/whkelvin/stamp/pkg/helpers"
-	"time"
 )
 
 type IWritePostHandler interface {
@@ -46,7 +46,7 @@ func (handler *WritePostHandler) WritePost(ctx context.Context, req Request) (*R
 		Description: dto.Description,
 		Link:        dto.Link,
 		RootDomain:  dto.RootDomain,
-		CreatedDate: dto.CreatedDate.UTC().Format(time.RFC3339),
+		CreatedDate: dto.CreatedDate,
 	}
 
 	return res, nil
