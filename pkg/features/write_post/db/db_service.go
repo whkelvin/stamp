@@ -37,7 +37,7 @@ func (db *WritePostDbService) CreatePost(ctx context.Context, request models.Req
 		CreatedDate: request.CreatedDate,
 		Link:        request.Link,
 		Description: request.Description,
-		Title:       request.Description,
+		Title:       request.Title,
 		RootDomain:  request.RootDomain,
 	}
 
