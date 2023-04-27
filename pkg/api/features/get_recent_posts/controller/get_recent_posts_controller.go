@@ -48,7 +48,7 @@ func (controller *GetRecentPostsController) GetRecentPosts(c echo.Context) error
 		return c.String(http.StatusInternalServerError, "Something went wrong, try again later.")
 	}
 
-	var posts []Post
+	var posts []Post = []Post{}
 
 	for i := 0; i < len(result.Posts); i++ {
 		posts = append(posts, Post{
@@ -68,5 +68,5 @@ func (controller *GetRecentPostsController) GetRecentPosts(c echo.Context) error
 		Page:     req.Page,
 	}
 
-	return c.JSON(http.StatusCreated, res)
+	return c.JSON(http.StatusOK, res)
 }
