@@ -27,7 +27,7 @@ func main() {
 	var e *echo.Echo = echo.New()
 
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
-		AllowOrigins: []string{"*"},
+		AllowOrigins: []string{"https://stamp-dev.rootxsnowstudio.com", "https://www.stamp-dev.rootxsnowstudio.com", "https://stamp-dev.rootxsnowstudio.com", "https://stamp-dev.rootxsnowstudio.com"},
 		AllowHeaders: []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept, "x-api-key"},
 	}))
 
