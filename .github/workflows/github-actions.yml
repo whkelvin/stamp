@@ -13,16 +13,3 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - run: go test -v ./tests/...
-
-  PrismaDatabaseMigrationDev:
-    environment: development
-    runs-on: ubuntu-latest
-    container:
-      image: node:18-alpine
-      env:
-        DATABASE_URL: ${{ secrets.DATABASE_URL }}
-    steps:
-      - uses: actions/checkout@v2
-      - run: npm install -g prisma
-      - run: prisma migrate deploy
-        working-directory: database/prisma
