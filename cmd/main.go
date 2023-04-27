@@ -12,6 +12,7 @@ import (
 	. "github.com/whkelvin/stamp/pkg/features/write_post"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	"golang.org/x/crypto/acme/autocert"
 	"net/http"
 )
 
@@ -26,6 +27,8 @@ func main() {
 
 	var e *echo.Echo = echo.New()
 
+	e.AutoTLSManager.HostPolicy = autocert.HostWhitelist("https://stamp-api-dev.rootxsnowstudio.com", "https://www.stamp-api-dev.rootxsnowstudio.com")
+	e.AutoTLSManager.Cache = autocert.DirCache("/var/www/.cache")
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
 		AllowOrigins: []string{"https://stamp-dev.rootxsnowstudio.com", "https://www.stamp-dev.rootxsnowstudio.com", "https://stamp-dev.rootxsnowstudio.com", "https://stamp-dev.rootxsnowstudio.com"},
 		AllowHeaders: []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept, "x-api-key"},
@@ -63,7 +66,7 @@ func main() {
 	var getRecentPostsController *GetRecentPostsController = &GetRecentPostsController{Handler: getRecentPostsFeature.Init()}
 	getRecentPostsController.Init(BASE_URL+"/posts", e)
 
-	e.Logger.Fatal(e.Start(":" + configs.Port))
+	e.Logger.Fatal(e.StartAutoTLS(":" + configs.Port))
 }
 
 func healthCheck(c echo.Context) error {
