@@ -22,9 +22,8 @@ func parseParams(params GetRecentPostsParams) (int32, int32, error) {
 	}
 
 	if params.Size != nil {
-		page = *params.Page
-
-		if size < 0 {
+		size = *params.Size
+		if size <= 0 {
 			return 0, 0, errors.New("Field 'size' has to be greater than zero.")
 		}
 	}
@@ -42,13 +41,23 @@ func (server *ApiServer) GetRecentPosts(ctx echo.Context, params GetRecentPostsP
 		Skip: int((page - 1) * (size)),
 		Take: int(size),
 	}
+
 	result, err := server.GetRecentPostsHandler.GetRecentPosts(ctx.Request().Context(), handlerReq)
 	if err != nil {
 		return ctx.String(http.StatusInternalServerError, "Something went wrong, try again later.")
 	}
 
-	var posts []Post = []Post{}
+	if result == nil {
+		res := PostResultSet{
+			Count:    0,
+			PageSize: size,
+			Posts:    []Post{},
+			Page:     page,
+		}
+		return ctx.JSON(http.StatusOK, res)
+	}
 
+	var posts []Post = []Post{}
 	for i := 0; i < len(result.Posts); i++ {
 		posts = append(posts, Post{
 			Id:          result.Posts[i].Id,

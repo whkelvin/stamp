@@ -33,7 +33,6 @@ func TestControllerInputValidation(t *testing.T) {
 	testCases := []TestCase{
 		{Page: &negativeOne, Size: &one, Expected: http.StatusBadRequest},
 		{Page: &one, Size: &zero, Expected: http.StatusBadRequest},
-		{Page: &one, Size: &one, Expected: http.StatusOK},
 	}
 
 	for i := 0; i < len(testCases); i++ {
@@ -47,14 +46,38 @@ func TestControllerInputValidation(t *testing.T) {
 			GetRecentPostsHandler: &GetRecentPostsHandlerMock{},
 		}
 
-		var page int32 = -1
-		var size int32 = 0
-
 		server.GetRecentPosts(ctx, GetRecentPostsParams{
-			Page: &page,
-			Size: &size,
+			Page: testCases[i].Page,
+			Size: testCases[i].Size,
 		})
 
-		assert.Equal(t, rec.Code, 400)
+		assert.Equal(t, rec.Code, testCases[i].Expected)
 	}
+}
+
+type GetRecentPostsHandlerNilMock struct {
+}
+
+func (m *GetRecentPostsHandlerNilMock) GetRecentPosts(ctx context.Context, req handlerModels.Request) (*handlerModels.Response, error) {
+	return nil, nil
+}
+
+func TestControllerShouldReturnWhenGetRecentPostsReturnsNull(t *testing.T) {
+	var one int32 = 1
+	var e *echo.Echo = echo.New()
+
+	rec := httptest.NewRecorder()
+	req := httptest.NewRequest(http.MethodGet, "/", nil)
+	ctx := e.NewContext(req, rec)
+
+	server := ApiServer{
+		GetRecentPostsHandler: &GetRecentPostsHandlerNilMock{},
+	}
+
+	server.GetRecentPosts(ctx, GetRecentPostsParams{
+		Page: &one,
+		Size: &one,
+	})
+
+	assert.Equal(t, rec.Code, http.StatusOK)
 }
