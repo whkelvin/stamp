@@ -23,7 +23,7 @@ func (db *GetRecentPostsDbService) GetRecentPosts(ctx context.Context, req Reque
 	coll := db.MongoDbClient.Database(db.MongoDbDatabaseName).Collection(db.MongoDbCollectionName)
 
 	filter := bson.D{}
-	opts := options.Find().SetSort(bson.D{primitive.E{Key: "created_date", Value: -1}}).SetLimit(int64(req.Take)).SetSkip(int64(req.Skip))
+	opts := options.Find().SetSort(bson.D{primitive.E{Key: "createdDate", Value: -1}}).SetLimit(int64(req.Take)).SetSkip(int64(req.Skip))
 
 	cursor, err := coll.Find(ctx, filter, opts)
 

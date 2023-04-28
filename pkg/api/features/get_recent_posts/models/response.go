@@ -12,7 +12,7 @@ type Response struct {
 }
 
 type Post struct {
-	PostId      string    `json:"postId"`
+	Id          string    `json:"id"`
 	Link        string    `json:"link"`
 	Title       string    `json:"title"`
 	Description string    `json:"description"`

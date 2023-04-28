@@ -1,7 +1,7 @@
 package models
 
 type Response struct {
-	PostId      string
+	Id          string
 	Link        string
 	Title       string
 	Description string

@@ -41,7 +41,7 @@ func (handler *WritePostHandler) WritePost(ctx context.Context, req Request) (*R
 	}
 
 	var res *Response = &Response{
-		PostId:      dto.PostId,
+		Id:          dto.Id,
 		Title:       dto.Title,
 		Description: dto.Description,
 		Link:        dto.Link,

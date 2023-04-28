@@ -60,7 +60,7 @@ func (controller *WritePostController) WritePost(c echo.Context) error {
 	}
 
 	res := Response{
-		PostId:      dto.PostId,
+		Id:          dto.Id,
 		Title:       dto.Title,
 		Description: dto.Description,
 		CreatedDate: dto.CreatedDate,

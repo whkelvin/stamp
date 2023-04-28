@@ -12,7 +12,7 @@ type Response struct {
 }
 
 type Post struct {
-	PostId      primitive.ObjectID `bson:"_id"`
+	Id          primitive.ObjectID `bson:"_id"`
 	Link        string             `bson:"link"`
 	Title       string             `bson:"title"`
 	Description string             `bson:"description"`

@@ -10,7 +10,7 @@ type Response struct {
 }
 
 type Post struct {
-	PostId      string
+	Id          string
 	Link        string
 	Title       string
 	Description string

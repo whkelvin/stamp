@@ -27,7 +27,7 @@ func main() {
 	var e *echo.Echo = echo.New()
 
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
-		AllowOrigins: []string{"https://stamp-dev.rootxsnowstudio.com", "https://www.stamp-dev.rootxsnowstudio.com", "https://stamp-dev.rootxsnowstudio.com", "https://stamp-dev.rootxsnowstudio.com"},
+		AllowOrigins: []string{"https://stamp-dev.rootxsnowstudio.com", "https://www.stamp-dev.rootxsnowstudio.com", "http://localhost:5173"},
 		AllowHeaders: []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept, "x-api-key"},
 	}))
 
@@ -37,8 +37,10 @@ func main() {
 		Skipper:   apiKeySkipper,
 		KeyLookup: "header:x-api-key",
 		Validator: func(key string, c echo.Context) (bool, error) {
-
 			return key == configs.ApiKey, nil
+		},
+		ErrorHandler: func(err error, c echo.Context) error {
+			return c.String(http.StatusUnauthorized, "")
 		},
 	}))
 

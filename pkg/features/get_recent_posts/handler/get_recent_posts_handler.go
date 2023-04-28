@@ -29,7 +29,7 @@ func (handler *GetRecentPostsHandler) GetRecentPosts(ctx context.Context, req ha
 	var posts []handlerModels.Post
 	for i := 0; i < len(dto.Posts); i++ {
 		dest := handlerModels.Post{
-			PostId:      dto.Posts[i].PostId.Hex(),
+			Id:          dto.Posts[i].Id.Hex(),
 			Description: dto.Posts[i].Description,
 			Link:        dto.Posts[i].Link,
 			Title:       dto.Posts[i].Title,

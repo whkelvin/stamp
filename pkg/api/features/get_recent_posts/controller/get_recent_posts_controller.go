@@ -52,7 +52,7 @@ func (controller *GetRecentPostsController) GetRecentPosts(c echo.Context) error
 
 	for i := 0; i < len(result.Posts); i++ {
 		posts = append(posts, Post{
-			PostId:      result.Posts[i].PostId,
+			Id:          result.Posts[i].Id,
 			CreatedDate: result.Posts[i].CreatedDate,
 			Title:       result.Posts[i].Title,
 			Link:        result.Posts[i].Link,
