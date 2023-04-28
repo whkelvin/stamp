@@ -1,56 +1,72 @@
 package helpers
 
 import (
-	. "github.com/franela/goblin"
+	"github.com/stretchr/testify/assert"
 	. "github.com/whkelvin/stamp/pkg/helpers"
 	"testing"
 )
 
-func TestHelpers(t *testing.T) {
+func TestGetYoutubeEmbedLinkShouldReturnYoutubeEmbedLink(t *testing.T) {
+	videoId := "mZWsyUKwTbg"
+	link1 := "http://www.youtube.com/watch?v=" + videoId + "&feature=feedrec_grec_index"
+	link2 := "http://www.youtube.com/user/IngridMichaelsonVEVO#p/a/u/1/" + videoId
+	link3 := "http://www.youtube.com/v/" + videoId + "?fs=1&amp;hl=en_US&amp;rel=0"
+	link4 := "http://www.youtube.com/watch?v=" + videoId
+	link5 := "http://www.youtube.com/embed/" + videoId + "?rel=0"
+	link6 := "http://www.youtube.com/watch?v=" + videoId
+	link7 := "http://youtu.be/" + videoId
+	expected := "https://www.youtube.com/embed/" + videoId
 
-	g := Goblin(t)
+	actual, err := GetYoutubeEmbedLink(link1)
+	assert.Equal(t, err, nil)
+	assert.Equal(t, expected, actual)
 
-	g.Describe("GetYoutubeEmbedLink", func() {
+	actual, err = GetYoutubeEmbedLink(link2)
+	assert.Equal(t, err, nil)
+	assert.Equal(t, expected, actual)
 
-		videoId := "mZWsyUKwTbg"
-		link1 := "http://www.youtube.com/watch?v=" + videoId + "&feature=feedrec_grec_index"
-		link2 := "http://www.youtube.com/user/IngridMichaelsonVEVO#p/a/u/1/" + videoId
-		link3 := "http://www.youtube.com/v/" + videoId + "?fs=1&amp;hl=en_US&amp;rel=0"
-		link4 := "http://www.youtube.com/watch?v=" + videoId
-		link5 := "http://www.youtube.com/embed/" + videoId + "?rel=0"
-		link6 := "http://www.youtube.com/watch?v=" + videoId
-		link7 := "http://youtu.be/" + videoId
-		expected := "https://www.youtube.com/embed/" + videoId
+	actual, err = GetYoutubeEmbedLink(link3)
+	assert.Equal(t, err, nil)
+	assert.Equal(t, expected, actual)
 
-		GetYoutubeEmbedLink(link1)
-		g.It("should return youtube embed link", func() {
-			actual, err := GetYoutubeEmbedLink(link1)
-			g.Assert(err).Equal(nil)
-			g.Assert(actual).Equal(expected)
+	actual, err = GetYoutubeEmbedLink(link4)
+	assert.Equal(t, err, nil)
+	assert.Equal(t, expected, actual)
 
-			actual, err = GetYoutubeEmbedLink(link2)
-			g.Assert(err).Equal(nil)
-			g.Assert(actual).Equal(expected)
+	actual, err = GetYoutubeEmbedLink(link5)
+	assert.Equal(t, err, nil)
+	assert.Equal(t, expected, actual)
 
-			actual, err = GetYoutubeEmbedLink(link3)
-			g.Assert(err).Equal(nil)
-			g.Assert(actual).Equal(expected)
+	actual, err = GetYoutubeEmbedLink(link6)
+	assert.Equal(t, err, nil)
+	assert.Equal(t, expected, actual)
 
-			actual, err = GetYoutubeEmbedLink(link4)
-			g.Assert(err).Equal(nil)
-			g.Assert(actual).Equal(expected)
+	actual, err = GetYoutubeEmbedLink(link7)
+	assert.Equal(t, err, nil)
+	assert.Equal(t, expected, actual)
+}
 
-			actual, err = GetYoutubeEmbedLink(link5)
-			g.Assert(err).Equal(nil)
-			g.Assert(actual).Equal(expected)
+func TestGetYoutubeEmbedLinkShouldNotReturnYoutubeEmbedLink(t *testing.T) {
+	link1 := "https://www.youtube.com/shorts/i5lM2QboT4U"
+	link2 := "https://www.youtube.com/@sysprog"
+	link3 := ""
+	invalidVideoId := "mZWsyUKwTbg123455afldi"
+	link4 := "http://www.youtube.com/watch?v=" + invalidVideoId + "&feature=feedrec_grec_index"
+	invalidVideoId = "123"
+	link5 := "http://www.youtube.com/watch?v=" + invalidVideoId + "&feature=feedrec_grec_index"
 
-			actual, err = GetYoutubeEmbedLink(link6)
-			g.Assert(err).Equal(nil)
-			g.Assert(actual).Equal(expected)
+	_, err := GetYoutubeEmbedLink(link1)
+	assert.NotEqual(t, err, nil)
 
-			actual, err = GetYoutubeEmbedLink(link7)
-			g.Assert(err).Equal(nil)
-			g.Assert(actual).Equal(expected)
-		})
-	})
+	_, err = GetYoutubeEmbedLink(link2)
+	assert.NotEqual(t, err, nil)
+
+	_, err = GetYoutubeEmbedLink(link3)
+	assert.NotEqual(t, err, nil)
+
+	_, err = GetYoutubeEmbedLink(link4)
+	assert.NotEqual(t, err, nil)
+
+	_, err = GetYoutubeEmbedLink(link5)
+	assert.NotEqual(t, err, nil)
 }

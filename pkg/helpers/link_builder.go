@@ -6,7 +6,7 @@ import (
 )
 
 func GetYoutubeEmbedLink(link string) (string, error) {
-	regExp := `^.*(?:(?:youtu\.be\/|v\/|vi\/|u\/\w\/|embed\/|shorts\/)|(?:(?:watch)?\?v(?:i)?=|\&v(?:i)?=))([^#\&\?]*).*`
+	regExp := `^.*(?:(?:youtu\.be\/|v\/|vi\/|u\/\w\/|embed\/)|(?:(?:watch)?\?v(?:i)?=|\&v(?:i)?=))([^#\&\?]*).*`
 	exp := regexp.MustCompile(regExp)
 	submatches := exp.FindStringSubmatch(link)
 
