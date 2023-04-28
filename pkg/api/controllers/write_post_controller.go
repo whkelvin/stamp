@@ -1,26 +1,15 @@
-package controller
+package controllers
 
 import (
 	"errors"
-	"net/http"
-
 	"github.com/labstack/echo/v4"
-	. "github.com/whkelvin/stamp/pkg/api/features/write_post/models"
-	"github.com/whkelvin/stamp/pkg/features/write_post/handler"
+	. "github.com/whkelvin/stamp/pkg/api/generated"
 	handlerModel "github.com/whkelvin/stamp/pkg/features/write_post/handler/models"
+	"net/http"
 )
 
-type WritePostController struct {
-	Handler handler.IWritePostHandler
-}
-
-func (c *WritePostController) Init(route string, e *echo.Echo) {
-	e.POST(route, c.WritePost)
-}
-
-func parseWritePostRequest(c echo.Context) (*Request, error) {
-
-	var req Request
+func parseWritePostRequest(c echo.Context) (*PostPostRequest, error) {
+	var req PostPostRequest
 	err := c.Bind(&req)
 	if err != nil {
 		return nil, err
@@ -41,11 +30,10 @@ func parseWritePostRequest(c echo.Context) (*Request, error) {
 	return &req, nil
 }
 
-func (controller *WritePostController) WritePost(c echo.Context) error {
-
-	req, err := parseWritePostRequest(c)
+func (server *ApiServer) CreatePost(ctx echo.Context) error {
+	req, err := parseWritePostRequest(ctx)
 	if err != nil {
-		return c.String(http.StatusBadRequest, err.Error())
+		return ctx.String(http.StatusBadRequest, err.Error())
 	}
 
 	handlerReq := handlerModel.Request{
@@ -54,12 +42,12 @@ func (controller *WritePostController) WritePost(c echo.Context) error {
 		Description: req.Description,
 		RootDomain:  req.RootDomain,
 	}
-	dto, err := controller.Handler.WritePost(c.Request().Context(), handlerReq)
+	dto, err := server.WritePostHandler.WritePost(ctx.Request().Context(), handlerReq)
 	if err != nil {
-		return c.String(http.StatusInternalServerError, "Something went wrong, try again later.")
+		return ctx.String(http.StatusInternalServerError, "Something went wrong, try again later.")
 	}
 
-	res := Response{
+	res := Post{
 		Id:          dto.Id,
 		Title:       dto.Title,
 		Description: dto.Description,
@@ -68,5 +56,5 @@ func (controller *WritePostController) WritePost(c echo.Context) error {
 		RootDomain:  dto.RootDomain,
 	}
 
-	return c.JSON(http.StatusCreated, res)
+	return ctx.JSON(http.StatusCreated, res)
 }

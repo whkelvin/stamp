@@ -6,8 +6,8 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/labstack/gommon/log"
 	. "github.com/whkelvin/stamp/configs"
-	. "github.com/whkelvin/stamp/pkg/api/features/get_recent_posts/controller"
-	. "github.com/whkelvin/stamp/pkg/api/features/write_post/controller"
+	. "github.com/whkelvin/stamp/pkg/api/controllers"
+	. "github.com/whkelvin/stamp/pkg/api/generated"
 	. "github.com/whkelvin/stamp/pkg/features/get_recent_posts"
 	. "github.com/whkelvin/stamp/pkg/features/write_post"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -57,13 +57,14 @@ func main() {
 
 	e.GET(BASE_URL+"/health", healthCheck)
 
-	writePostFeature := &WritePostFeature{MongoDbClient: mongoClient, MongoDbDatabaseName: configs.MongoDbDatabaseName, MongoDbCollectionName: configs.MongoDbPostsCollectionName}
-	var writePostController *WritePostController = &WritePostController{Handler: writePostFeature.Init()}
-	writePostController.Init(BASE_URL+"/post", e)
+	writePostFeature := WritePostFeature{MongoDbClient: mongoClient, MongoDbDatabaseName: configs.MongoDbDatabaseName, MongoDbCollectionName: configs.MongoDbPostsCollectionName}
+	getRecentPostsFeature := GetRecentPostsFeature{MongoDbClient: mongoClient, MongoDbDatabaseName: configs.MongoDbDatabaseName, MongoDbCollectionName: configs.MongoDbPostsCollectionName}
 
-	getRecentPostsFeature := &GetRecentPostsFeature{MongoDbClient: mongoClient, MongoDbDatabaseName: configs.MongoDbDatabaseName, MongoDbCollectionName: configs.MongoDbPostsCollectionName}
-	var getRecentPostsController *GetRecentPostsController = &GetRecentPostsController{Handler: getRecentPostsFeature.Init()}
-	getRecentPostsController.Init(BASE_URL+"/posts", e)
+	var apiServer ApiServer = ApiServer{
+		WritePostHandler:      writePostFeature.Init(),
+		GetRecentPostsHandler: getRecentPostsFeature.Init(),
+	}
+	RegisterHandlersWithBaseURL(e, &apiServer, BASE_URL)
 
 	e.Logger.Fatal(e.Start(":" + configs.Port))
 }
