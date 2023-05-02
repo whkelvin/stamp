@@ -22,8 +22,18 @@ type GetRecentPostsDbService struct {
 func (db *GetRecentPostsDbService) GetRecentPosts(ctx context.Context, req Request) (*Response, error) {
 	coll := db.MongoDbClient.Database(db.MongoDbDatabaseName).Collection(db.MongoDbCollectionName)
 
-	filter := bson.D{}
-	opts := options.Find().SetSort(bson.D{primitive.E{Key: "createdDate", Value: -1}}).SetLimit(int64(req.Take)).SetSkip(int64(req.Skip))
+	lastFetchedItemId, _ := primitive.ObjectIDFromHex(req.LastFetchedId)
+
+	filter := bson.M{
+		"_id": bson.D{
+			primitive.E{
+				Key:   "$gt",
+				Value: lastFetchedItemId,
+			},
+		},
+	}
+
+	opts := options.Find().SetLimit(int64(req.Take))
 
 	cursor, err := coll.Find(ctx, filter, opts)
 

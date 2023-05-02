@@ -3,6 +3,6 @@ generate:
   models: true
   echo-server: true
   embedded-spec: false
-output: ./pkg/api/generated/models/gen.go
+output: ./pkg/api/generated/gen.go
 output-options:
   skip-prune: false
