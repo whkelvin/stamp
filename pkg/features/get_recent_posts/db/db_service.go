@@ -27,7 +27,7 @@ func (db *GetRecentPostsDbService) GetRecentPosts(ctx context.Context, req Reque
 	filter := bson.M{
 		"_id": bson.D{
 			primitive.E{
-				Key:   "$gt",
+				Key:   "$lt",
 				Value: lastFetchedItemId,
 			},
 		},
