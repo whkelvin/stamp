@@ -70,3 +70,34 @@ func TestGetYoutubeEmbedLinkShouldNotReturnYoutubeEmbedLink(t *testing.T) {
 	_, err = GetYoutubeEmbedLink(link5)
 	assert.NotEqual(t, err, nil)
 }
+
+func TestValidateGithubLinkShouldNotReturnError(t *testing.T) {
+	link1 := "https://www.github.com/abcde/eolisj-eefj"
+	link2 := "http://www.github.com/aoijf/seof-2te"
+
+	err := ValidateGithubLink(link1)
+	assert.Equal(t, err, nil)
+
+	err = ValidateGithubLink(link2)
+	assert.Equal(t, err, nil)
+
+}
+
+func TestValidateGithubLinkShouldReturnError(t *testing.T) {
+	link1 := "https://www.github.com/abcde/eolisj-e/"
+	link2 := "http://www.github.com/aoijf/"
+	link3 := "http://www.github.com/"
+	link4 := "http://www.github.com/helo/hello/hello"
+
+	err := ValidateGithubLink(link1)
+	assert.NotEqual(t, err, nil)
+
+	err = ValidateGithubLink(link2)
+	assert.NotEqual(t, err, nil)
+
+	err = ValidateGithubLink(link3)
+	assert.NotEqual(t, err, nil)
+
+	err = ValidateGithubLink(link4)
+	assert.NotEqual(t, err, nil)
+}

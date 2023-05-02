@@ -35,6 +35,14 @@ func (handler *WritePostHandler) WritePost(ctx context.Context, req Request) (*R
 		newPost.Link = result
 	}
 
+	if newPost.RootDomain == "github.com" {
+		err := helpers.ValidateGithubLink(newPost.Link)
+
+		if err != nil {
+			return nil, errors.New("Invalid github link")
+		}
+	}
+
 	dto, err := handler.DbService.CreatePost(ctx, newPost)
 	if err != nil {
 		return nil, err

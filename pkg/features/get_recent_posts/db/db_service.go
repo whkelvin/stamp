@@ -22,29 +22,47 @@ type GetRecentPostsDbService struct {
 func (db *GetRecentPostsDbService) GetRecentPosts(ctx context.Context, req Request) (*Response, error) {
 	coll := db.MongoDbClient.Database(db.MongoDbDatabaseName).Collection(db.MongoDbCollectionName)
 
-	lastFetchedItemId, _ := primitive.ObjectIDFromHex(req.LastFetchedId)
+	if req.LastFetchedItemId == "" {
+		filter := bson.D{}
+		opts := options.Find().SetSort(bson.D{primitive.E{Key: "createdDate", Value: -1}}).SetLimit(int64(req.Take))
 
-	filter := bson.M{
-		"_id": bson.D{
-			primitive.E{
-				Key:   "$gt",
-				Value: lastFetchedItemId,
+		cursor, err := coll.Find(ctx, filter, opts)
+
+		var result []Post
+		if err = cursor.All(ctx, &result); err != nil {
+			return nil, err
+		}
+
+		res := &Response{
+			Posts: result,
+			Count: len(result),
+		}
+		return res, nil
+	} else {
+		lastFetchedItemId, _ := primitive.ObjectIDFromHex(req.LastFetchedItemId)
+
+		filter := bson.M{
+			"_id": bson.D{
+				primitive.E{
+					Key:   "$lt",
+					Value: lastFetchedItemId,
+				},
 			},
-		},
+		}
+
+		opts := options.Find().SetSort(bson.D{primitive.E{Key: "createdDate", Value: -1}}).SetLimit(int64(req.Take))
+
+		cursor, err := coll.Find(ctx, filter, opts)
+
+		var result []Post
+		if err = cursor.All(ctx, &result); err != nil {
+			return nil, err
+		}
+
+		res := &Response{
+			Posts: result,
+			Count: len(result),
+		}
+		return res, nil
 	}
-
-	opts := options.Find().SetLimit(int64(req.Take))
-
-	cursor, err := coll.Find(ctx, filter, opts)
-
-	var result []Post
-	if err = cursor.All(ctx, &result); err != nil {
-		return nil, err
-	}
-
-	res := &Response{
-		Posts: result,
-		Count: len(result),
-	}
-	return res, nil
 }

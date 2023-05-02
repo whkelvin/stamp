@@ -19,8 +19,8 @@ type GetRecentPostsHandler struct {
 func (handler *GetRecentPostsHandler) GetRecentPosts(ctx context.Context, req handlerModels.Request) (*handlerModels.Response, error) {
 
 	dto, err := handler.DbService.GetRecentPosts(ctx, dbModels.Request{
-		Take:          req.Take,
-		LastFetchedId: req.LastFetchedItemId,
+		Take:              req.Take,
+		LastFetchedItemId: req.LastFetchedItemId,
 	})
 	if err != nil {
 		return nil, err
