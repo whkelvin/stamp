@@ -20,19 +20,17 @@ func (m *GetRecentPostsHandlerMock) GetRecentPosts(ctx context.Context, req hand
 }
 
 type TestCase struct {
-	Page     *int32
-	Size     *int32
-	Expected int
+	LastFetchedId *string
+	Size          *int32
+	Expected      int
 }
 
 func TestControllerInputValidation(t *testing.T) {
-	var negativeOne int32 = -1
-	var one int32 = 1
 	var zero int32 = 0
+	var emptyString = ""
 
 	testCases := []TestCase{
-		{Page: &negativeOne, Size: &one, Expected: http.StatusBadRequest},
-		{Page: &one, Size: &zero, Expected: http.StatusBadRequest},
+		{LastFetchedId: &emptyString, Size: &zero, Expected: http.StatusBadRequest},
 	}
 
 	for i := 0; i < len(testCases); i++ {
@@ -47,8 +45,8 @@ func TestControllerInputValidation(t *testing.T) {
 		}
 
 		server.GetRecentPosts(ctx, GetRecentPostsParams{
-			Page: testCases[i].Page,
-			Size: testCases[i].Size,
+			LastFetchedItemId: testCases[i].LastFetchedId,
+			Size:              testCases[i].Size,
 		})
 
 		assert.Equal(t, rec.Code, testCases[i].Expected)
@@ -64,6 +62,7 @@ func (m *GetRecentPostsHandlerNilMock) GetRecentPosts(ctx context.Context, req h
 
 func TestControllerShouldReturnWhenGetRecentPostsReturnsNull(t *testing.T) {
 	var one int32 = 1
+	var mtString = ""
 	var e *echo.Echo = echo.New()
 
 	rec := httptest.NewRecorder()
@@ -75,8 +74,8 @@ func TestControllerShouldReturnWhenGetRecentPostsReturnsNull(t *testing.T) {
 	}
 
 	server.GetRecentPosts(ctx, GetRecentPostsParams{
-		Page: &one,
-		Size: &one,
+		LastFetchedItemId: &mtString,
+		Size:              &one,
 	})
 
 	assert.Equal(t, rec.Code, http.StatusOK)
