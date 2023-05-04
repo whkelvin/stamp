@@ -2,8 +2,7 @@ package handler
 
 import (
 	"context"
-	"errors"
-
+	handlerError "github.com/whkelvin/stamp/pkg/features/errors/handler"
 	. "github.com/whkelvin/stamp/pkg/features/write_post/db"
 	dbModels "github.com/whkelvin/stamp/pkg/features/write_post/db/models"
 	. "github.com/whkelvin/stamp/pkg/features/write_post/handler/models"
@@ -30,7 +29,7 @@ func (handler *WritePostHandler) WritePost(ctx context.Context, req Request) (*R
 	if newPost.RootDomain == "youtube.com" {
 		result, err := helpers.GetYoutubeEmbedLink(newPost.Link)
 		if err != nil {
-			return nil, errors.New("Invalid youtube link")
+			return nil, handlerError.New("Invalid youtube link", true)
 		}
 		newPost.Link = result
 	}
@@ -39,13 +38,16 @@ func (handler *WritePostHandler) WritePost(ctx context.Context, req Request) (*R
 		err := helpers.ValidateGithubLink(newPost.Link)
 
 		if err != nil {
-			return nil, errors.New("Invalid github link")
+			return nil, handlerError.New("Invalid github link", true)
 		}
 	}
 
 	dto, err := handler.DbService.CreatePost(ctx, newPost)
 	if err != nil {
-		return nil, err
+		return nil, handlerError.New(err.Error(), false)
+	}
+	if dto == nil {
+		return nil, handlerError.New("db failed to create post", false)
 	}
 
 	var res *Response = &Response{

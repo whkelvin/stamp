@@ -2,7 +2,6 @@ package helpers
 
 import (
 	"errors"
-	"fmt"
 	"regexp"
 )
 
@@ -22,7 +21,6 @@ func ValidateGithubLink(link string) error {
 	regExp := `^.*github\.com(?:\/[^\/]+){2}$`
 	exp := regexp.MustCompile(regExp)
 	submatches := exp.FindString(link)
-	fmt.Printf("%v", submatches)
 	if len(submatches) == 0 {
 		return errors.New("Invalid github link")
 	}

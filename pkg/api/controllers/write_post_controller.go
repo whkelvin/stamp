@@ -2,10 +2,12 @@ package controllers
 
 import (
 	"errors"
+	"net/http"
+
 	"github.com/labstack/echo/v4"
 	. "github.com/whkelvin/stamp/pkg/api/generated"
+	handlerError "github.com/whkelvin/stamp/pkg/features/errors/handler"
 	handlerModel "github.com/whkelvin/stamp/pkg/features/write_post/handler/models"
-	"net/http"
 )
 
 func parseWritePostRequest(c echo.Context) (*PostPostRequest, error) {
@@ -44,6 +46,10 @@ func (server *ApiServer) CreatePost(ctx echo.Context) error {
 	}
 	dto, err := server.WritePostHandler.WritePost(ctx.Request().Context(), handlerReq)
 	if err != nil {
+		handlerErr, ok := err.(handlerError.HandlerError)
+		if ok && handlerErr.IsBadInput() {
+			return ctx.String(http.StatusBadRequest, err.Error())
+		}
 		return ctx.String(http.StatusInternalServerError, "Something went wrong, try again later.")
 	}
 

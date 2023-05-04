@@ -3,6 +3,7 @@ package handler
 import (
 	"context"
 
+	handlerError "github.com/whkelvin/stamp/pkg/features/errors/handler"
 	. "github.com/whkelvin/stamp/pkg/features/get_recent_posts/db"
 	dbModels "github.com/whkelvin/stamp/pkg/features/get_recent_posts/db/models"
 	handlerModels "github.com/whkelvin/stamp/pkg/features/get_recent_posts/handler/models"
@@ -23,10 +24,18 @@ func (handler *GetRecentPostsHandler) GetRecentPosts(ctx context.Context, req ha
 		LastFetchedItemId: req.LastFetchedItemId,
 	})
 	if err != nil {
-		return nil, err
+		return nil, handlerError.New(err.Error(), false)
 	}
 
-	var posts []handlerModels.Post
+	var posts []handlerModels.Post = []handlerModels.Post{}
+
+	if dto == nil {
+		return &handlerModels.Response{
+			Count: 0,
+			Posts: posts,
+		}, nil
+	}
+
 	for i := 0; i < dto.Count; i++ {
 		dest := handlerModels.Post{
 			Id:          dto.Posts[i].Id.Hex(),

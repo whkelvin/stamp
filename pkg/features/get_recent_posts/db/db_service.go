@@ -2,6 +2,7 @@ package db
 
 import (
 	"context"
+	dbError "github.com/whkelvin/stamp/pkg/features/errors/db"
 	. "github.com/whkelvin/stamp/pkg/features/get_recent_posts/db/models"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -30,7 +31,8 @@ func (db *GetRecentPostsDbService) GetRecentPosts(ctx context.Context, req Reque
 
 		var result []Post
 		if err = cursor.All(ctx, &result); err != nil {
-			return nil, err
+
+			return nil, dbError.New(err.Error())
 		}
 
 		res := &Response{
@@ -56,7 +58,7 @@ func (db *GetRecentPostsDbService) GetRecentPosts(ctx context.Context, req Reque
 
 		var result []Post
 		if err = cursor.All(ctx, &result); err != nil {
-			return nil, err
+			return nil, dbError.New(err.Error())
 		}
 
 		res := &Response{

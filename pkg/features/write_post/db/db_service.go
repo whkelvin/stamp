@@ -2,6 +2,7 @@ package db
 
 import (
 	"context"
+	dbError "github.com/whkelvin/stamp/pkg/features/errors/db"
 	"github.com/whkelvin/stamp/pkg/features/write_post/db/models"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -27,7 +28,7 @@ func (db *WritePostDbService) CreatePost(ctx context.Context, request models.Req
 
 	result, err := coll.InsertOne(ctx, request, opts)
 	if err != nil {
-		return nil, err
+		return nil, dbError.New(err.Error())
 	}
 
 	id := result.InsertedID.(primitive.ObjectID).Hex()

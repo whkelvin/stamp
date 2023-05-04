@@ -31,6 +31,11 @@ func main() {
 		AllowHeaders: []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept, "x-api-key"},
 	}))
 
+	e.Use(middleware.RecoverWithConfig(middleware.RecoverConfig{
+		StackSize: 1 << 10, // 1 KB
+		LogLevel:  log.ERROR,
+	}))
+
 	log.SetLevel(log.INFO)
 	log.SetHeader("${time_rfc3339} ${level}")
 	e.Use(middleware.KeyAuthWithConfig(middleware.KeyAuthConfig{
