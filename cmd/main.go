@@ -25,7 +25,32 @@ func main() {
 	}
 
 	var e *echo.Echo = echo.New()
+	setupMiddleWare(e, configs)
+	e.GET(BASE_URL+"/health", healthCheck)
 
+	ctx := context.Background()
+	mongoClient, err := mongo.Connect(ctx, options.Client().ApplyURI(configs.MongoDbConnectionString))
+	if err != nil {
+		panic(err)
+	}
+	defer func() {
+		if err := mongoClient.Disconnect(ctx); err != nil {
+			panic(err)
+		}
+	}()
+
+	writePostFeature := WritePostFeature{MongoDbClient: mongoClient, MongoDbDatabaseName: configs.MongoDbDatabaseName, MongoDbCollectionName: configs.MongoDbPostsCollectionName}
+	getRecentPostsFeature := GetRecentPostsFeature{MongoDbClient: mongoClient, MongoDbDatabaseName: configs.MongoDbDatabaseName, MongoDbCollectionName: configs.MongoDbPostsCollectionName}
+
+	var apiServer ApiServer = ApiServer{
+		WritePostHandler:      writePostFeature.Init(),
+		GetRecentPostsHandler: getRecentPostsFeature.Init(),
+	}
+	RegisterHandlersWithBaseURL(e, &apiServer, BASE_URL)
+	e.Logger.Fatal(e.Start(":" + configs.Port))
+}
+
+func setupMiddleWare(e *echo.Echo, configs *Configs) {
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
 		AllowOrigins: []string{"https://stamp-dev.rootxsnowstudio.com", "https://www.stamp-dev.rootxsnowstudio.com", "http://localhost:5173"},
 		AllowHeaders: []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept, "x-api-key"},
@@ -48,30 +73,6 @@ func main() {
 			return c.String(http.StatusUnauthorized, "")
 		},
 	}))
-
-	ctx := context.Background()
-	mongoClient, err := mongo.Connect(ctx, options.Client().ApplyURI(configs.MongoDbConnectionString))
-	if err != nil {
-		panic(err)
-	}
-	defer func() {
-		if err := mongoClient.Disconnect(ctx); err != nil {
-			panic(err)
-		}
-	}()
-
-	e.GET(BASE_URL+"/health", healthCheck)
-
-	writePostFeature := WritePostFeature{MongoDbClient: mongoClient, MongoDbDatabaseName: configs.MongoDbDatabaseName, MongoDbCollectionName: configs.MongoDbPostsCollectionName}
-	getRecentPostsFeature := GetRecentPostsFeature{MongoDbClient: mongoClient, MongoDbDatabaseName: configs.MongoDbDatabaseName, MongoDbCollectionName: configs.MongoDbPostsCollectionName}
-
-	var apiServer ApiServer = ApiServer{
-		WritePostHandler:      writePostFeature.Init(),
-		GetRecentPostsHandler: getRecentPostsFeature.Init(),
-	}
-	RegisterHandlersWithBaseURL(e, &apiServer, BASE_URL)
-
-	e.Logger.Fatal(e.Start(":" + configs.Port))
 }
 
 func healthCheck(c echo.Context) error {
