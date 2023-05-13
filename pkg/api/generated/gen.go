@@ -12,8 +12,19 @@ import (
 )
 
 const (
-	Api_keyScopes = "api_key.Scopes"
+	JwtScopes = "jwt.Scopes"
 )
+
+// LogInRequest defines model for LogInRequest.
+type LogInRequest struct {
+	AccessToken  string `json:"accessToken"`
+	AuthProvider string `json:"authProvider"`
+}
+
+// LogInResponse defines model for LogInResponse.
+type LogInResponse struct {
+	Jwt string `json:"jwt"`
+}
 
 // Post defines model for Post.
 type Post struct {
@@ -40,6 +51,11 @@ type PostResultSet struct {
 	Posts    []Post `json:"posts"`
 }
 
+// RefreshTokenResponse defines model for RefreshTokenResponse.
+type RefreshTokenResponse struct {
+	Jwt string `json:"jwt"`
+}
+
 // GetRecentPostsParams defines parameters for GetRecentPosts.
 type GetRecentPostsParams struct {
 	// Size Number of results are included in a page
@@ -49,17 +65,26 @@ type GetRecentPostsParams struct {
 	LastFetchedItemId *string `form:"lastFetchedItemId,omitempty" json:"lastFetchedItemId,omitempty"`
 }
 
+// LogInJSONRequestBody defines body for LogIn for application/json ContentType.
+type LogInJSONRequestBody = LogInRequest
+
 // CreatePostJSONRequestBody defines body for CreatePost for application/json ContentType.
 type CreatePostJSONRequestBody = PostPostRequest
 
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
+	// log in or sign up to stamp with an external auth provider
+	// (POST /login)
+	LogIn(ctx echo.Context) error
 	// create a new post
 	// (POST /post)
 	CreatePost(ctx echo.Context) error
 	// get a list of most recent posts
 	// (GET /posts)
 	GetRecentPosts(ctx echo.Context, params GetRecentPostsParams) error
+	// exchange token in header for a new one
+	// (POST /refresh-token)
+	RefreshToken(ctx echo.Context) error
 }
 
 // ServerInterfaceWrapper converts echo contexts to parameters.
@@ -67,11 +92,20 @@ type ServerInterfaceWrapper struct {
 	Handler ServerInterface
 }
 
+// LogIn converts echo context to params.
+func (w *ServerInterfaceWrapper) LogIn(ctx echo.Context) error {
+	var err error
+
+	// Invoke the callback with all the unmarshalled arguments
+	err = w.Handler.LogIn(ctx)
+	return err
+}
+
 // CreatePost converts echo context to params.
 func (w *ServerInterfaceWrapper) CreatePost(ctx echo.Context) error {
 	var err error
 
-	ctx.Set(Api_keyScopes, []string{""})
+	ctx.Set(JwtScopes, []string{""})
 
 	// Invoke the callback with all the unmarshalled arguments
 	err = w.Handler.CreatePost(ctx)
@@ -103,6 +137,17 @@ func (w *ServerInterfaceWrapper) GetRecentPosts(ctx echo.Context) error {
 	return err
 }
 
+// RefreshToken converts echo context to params.
+func (w *ServerInterfaceWrapper) RefreshToken(ctx echo.Context) error {
+	var err error
+
+	ctx.Set(JwtScopes, []string{""})
+
+	// Invoke the callback with all the unmarshalled arguments
+	err = w.Handler.RefreshToken(ctx)
+	return err
+}
+
 // This is a simple interface which specifies echo.Route addition functions which
 // are present on both echo.Echo and echo.Group, since we want to allow using
 // either of them for path registration
@@ -131,7 +176,9 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 		Handler: si,
 	}
 
+	router.POST(baseURL+"/login", wrapper.LogIn)
 	router.POST(baseURL+"/post", wrapper.CreatePost)
 	router.GET(baseURL+"/posts", wrapper.GetRecentPosts)
+	router.POST(baseURL+"/refresh-token", wrapper.RefreshToken)
 
 }

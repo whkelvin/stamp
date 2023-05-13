@@ -11,8 +11,10 @@ type Configs struct {
 	MongoDbConnectionString    string
 	MongoDbDatabaseName        string
 	MongoDbPostsCollectionName string
+	MongoDbUsersCollectionName string
 	ApiKey                     string
 	Port                       string
+	JwtSecret                  string
 }
 
 func (c *Configs) Init() error {
@@ -29,6 +31,7 @@ func (c *Configs) Init() error {
 
 	c.MongoDbDatabaseName = "stamp"
 	c.MongoDbPostsCollectionName = "posts"
+	c.MongoDbUsersCollectionName = "users"
 
 	if os.Getenv("API_KEY") != "" {
 		c.ApiKey = os.Getenv("API_KEY")
@@ -40,6 +43,12 @@ func (c *Configs) Init() error {
 		c.Port = os.Getenv("PORT")
 	} else {
 		c.Port = "1323"
+	}
+
+	if os.Getenv("JWT_SECRET") != "" {
+		c.JwtSecret = os.Getenv("JWT_SECRET")
+	} else {
+		return errors.New("jwt secret is required.")
 	}
 
 	return nil
